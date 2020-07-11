@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import asyncio
-from asyncio.futures import Future
 import os
 
 from playwright.page import Page
@@ -35,11 +34,11 @@ async def test_should_upload_the_file(page, server):
     assert (
         await page.evaluate(
             """e => {
-        reader = new FileReader()
-        promise = new Promise(fulfill => reader.onload = fulfill)
-        reader.readAsText(e.files[0])
-        return promise.then(() => reader.result)
-    }""",
+                reader = new FileReader()
+                promise = new Promise(fulfill => reader.onload = fulfill)
+                reader.readAsText(e.files[0])
+                return promise.then(() => reader.result)
+            }""",
             input,
         )
         == "contents of the file"
@@ -74,7 +73,7 @@ async def test_should_set_from_memory(page):
 
 async def test_should_emit_event(page: Page, server):
     await page.setContent("<input type=file>")
-    fc_done: asyncio.Future = asyncio.Future()
+    fc_done: asyncio.Future[FileChooser] = asyncio.Future()
     page.once("filechooser", lambda file_chooser: fc_done.set_result(file_chooser)),
     await page.click("input")
     file_chooser = await fc_done
@@ -91,10 +90,10 @@ async def test_should_work_when_file_input_is_attached_to_DOM(page: Page, server
 async def test_should_work_when_file_input_is_not_attached_to_DOM(page, server):
     await page.evaluate(
         """() => {
-        el = document.createElement('input')
-        el.type = 'file'
-        el.click()
-      }"""
+            el = document.createElement('input')
+            el.type = 'file'
+            el.click()
+        }"""
     )
     assert await page.waitForEvent("filechooser")
 
