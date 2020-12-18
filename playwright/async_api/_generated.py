@@ -23,16 +23,18 @@ else:  # pragma: no cover
     from typing_extensions import Literal
 
 from playwright._accessibility import Accessibility as AccessibilityImpl
-from playwright._api_structures import Cookie, ResourceTiming, StorageState
-from playwright._api_types import (
-    DeviceDescriptor,
-    FilePayload,
-    FloatRect,
-    Geolocation,
-    PdfMargins,
-    ProxySettings,
-    SourceLocation,
-)
+from playwright._api_structures import Cookie as CookieImpl
+from playwright._api_structures import ResourceTiming as ResourceTimingImpl
+from playwright._api_structures import StorageState as StorageStateImpl
+from playwright._api_types import DeviceDescriptor as DeviceDescriptorImpl
+from playwright._api_types import Error as ErrorImpl
+from playwright._api_types import FilePayload as FilePayloadImpl
+from playwright._api_types import FloatRect as FloatRectImpl
+from playwright._api_types import Geolocation as GeolocationImpl
+from playwright._api_types import PdfMargins as PdfMarginsImpl
+from playwright._api_types import ProxySettings as ProxySettingsImpl
+from playwright._api_types import SourceLocation as SourceLocationImpl
+from playwright._api_types import TimeoutError as TimeoutErrorImpl
 from playwright._async_base import AsyncBase, AsyncEventContextManager, mapping
 from playwright._browser import Browser as BrowserImpl
 from playwright._browser_context import BrowserContext as BrowserContextImpl
@@ -63,6 +65,20 @@ from playwright._selectors import Selectors as SelectorsImpl
 from playwright._video import Video as VideoImpl
 
 NoneType = type(None)
+
+Cookie = CookieImpl
+ResourceTiming = ResourceTimingImpl
+StorageState = StorageStateImpl
+
+DeviceDescriptor = DeviceDescriptorImpl
+Error = ErrorImpl
+FilePayload = FilePayloadImpl
+FloatRect = FloatRectImpl
+Geolocation = GeolocationImpl
+PdfMargins = PdfMarginsImpl
+ProxySettings = ProxySettingsImpl
+SourceLocation = SourceLocationImpl
+TimeoutError = TimeoutErrorImpl
 
 
 class Request(AsyncBase):

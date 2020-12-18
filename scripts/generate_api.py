@@ -153,7 +153,17 @@ else:  # pragma: no cover
 
 
 from playwright._accessibility import Accessibility as AccessibilityImpl
-from playwright._api_types import DeviceDescriptor, Geolocation, FilePayload, FloatRect, PdfMargins, ProxySettings, SourceLocation
+from playwright._api_types import (
+    DeviceDescriptor,
+    Error,
+    FilePayload,
+    FloatRect,
+    Geolocation,
+    PdfMargins,
+    ProxySettings,
+    SourceLocation,
+    TimeoutError,
+)
 from playwright._browser import Browser as BrowserImpl
 from playwright._browser_context import BrowserContext as BrowserContextImpl
 from playwright._browser_type import BrowserType as BrowserTypeImpl
@@ -173,7 +183,9 @@ from playwright._page import BindingCall as BindingCallImpl, Page as PageImpl, W
 from playwright._playwright import Playwright as PlaywrightImpl
 from playwright._selectors import Selectors as SelectorsImpl
 from playwright._video import Video as VideoImpl
+
 """
+
 
 all_types = [
     Request,
