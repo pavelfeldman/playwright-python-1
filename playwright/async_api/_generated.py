@@ -23,15 +23,19 @@ else:  # pragma: no cover
     from typing_extensions import Literal
 
 from playwright._impl._accessibility import Accessibility as AccessibilityImpl
-from playwright._impl._api_structures import Cookie, ResourceTiming, StorageState
-from playwright._impl._api_types import (
-    DeviceDescriptor,
+from playwright._impl._api_structures import (
+    Cookie,
     FilePayload,
     FloatRect,
     Geolocation,
+    HttpCredentials,
     PdfMargins,
+    Position,
     ProxySettings,
+    ResourceTiming,
     SourceLocation,
+    StorageState,
+    ViewportSize,
 )
 from playwright._impl._async_base import AsyncBase, AsyncEventContextManager, mapping
 from playwright._impl._browser import Browser as BrowserImpl
@@ -221,9 +225,14 @@ class Request(AsyncBase):
     def failure(self) -> typing.Union[str, NoneType]:
         """Request.failure
 
-        The method returns `null` unless this request has failed, as reported by `requestfailed` event.
+        Returns human-readable error message, e.g. `'net::ERR_FAILED'`. The method returns `None` unless this request has
+        failed, as reported by `requestfailed` event.
 
         Example of logging of all the failed requests:
+
+        ```python
+        page.on('requestfailed', lambda request: print(request.url + ' ' + request.failure);
+        ```
 
         Returns
         -------
@@ -1457,7 +1466,7 @@ class ElementHandle(JSHandle):
         modifiers: typing.Union[
             typing.List[Literal["Alt", "Control", "Meta", "Shift"]]
         ] = None,
-        position: typing.Union[typing.Tuple[float, float]] = None,
+        position: "Position" = None,
         timeout: float = None,
         force: bool = None,
     ) -> NoneType:
@@ -1479,7 +1488,7 @@ class ElementHandle(JSHandle):
         modifiers : Union[List[Union["Alt", "Control", "Meta", "Shift"]], NoneType]
             Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current
             modifiers back. If not specified, currently pressed modifiers are used.
-        position : Union[typing.Tuple[float, float], NoneType]
+        position : Union[{x: float, y: float}, NoneType]
             A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the
             element.
         timeout : Union[float, NoneType]
@@ -1507,7 +1516,7 @@ class ElementHandle(JSHandle):
         modifiers: typing.Union[
             typing.List[Literal["Alt", "Control", "Meta", "Shift"]]
         ] = None,
-        position: typing.Union[typing.Tuple[float, float]] = None,
+        position: "Position" = None,
         delay: float = None,
         button: Literal["left", "middle", "right"] = None,
         click_count: int = None,
@@ -1533,7 +1542,7 @@ class ElementHandle(JSHandle):
         modifiers : Union[List[Union["Alt", "Control", "Meta", "Shift"]], NoneType]
             Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current
             modifiers back. If not specified, currently pressed modifiers are used.
-        position : Union[typing.Tuple[float, float], NoneType]
+        position : Union[{x: float, y: float}, NoneType]
             A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the
             element.
         delay : Union[float, NoneType]
@@ -1578,7 +1587,7 @@ class ElementHandle(JSHandle):
         modifiers: typing.Union[
             typing.List[Literal["Alt", "Control", "Meta", "Shift"]]
         ] = None,
-        position: typing.Union[typing.Tuple[float, float]] = None,
+        position: "Position" = None,
         delay: float = None,
         button: Literal["left", "middle", "right"] = None,
         timeout: float = None,
@@ -1606,7 +1615,7 @@ class ElementHandle(JSHandle):
         modifiers : Union[List[Union["Alt", "Control", "Meta", "Shift"]], NoneType]
             Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current
             modifiers back. If not specified, currently pressed modifiers are used.
-        position : Union[typing.Tuple[float, float], NoneType]
+        position : Union[{x: float, y: float}, NoneType]
             A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the
             element.
         delay : Union[float, NoneType]
@@ -1707,7 +1716,7 @@ class ElementHandle(JSHandle):
         modifiers: typing.Union[
             typing.List[Literal["Alt", "Control", "Meta", "Shift"]]
         ] = None,
-        position: typing.Union[typing.Tuple[float, float]] = None,
+        position: "Position" = None,
         timeout: float = None,
         force: bool = None,
         no_wait_after: bool = None,
@@ -1732,7 +1741,7 @@ class ElementHandle(JSHandle):
         modifiers : Union[List[Union["Alt", "Control", "Meta", "Shift"]], NoneType]
             Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current
             modifiers back. If not specified, currently pressed modifiers are used.
-        position : Union[typing.Tuple[float, float], NoneType]
+        position : Union[{x: float, y: float}, NoneType]
             A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the
             element.
         timeout : Union[float, NoneType]
@@ -1844,7 +1853,7 @@ class ElementHandle(JSHandle):
 
         Parameters
         ----------
-        files : Union[List[Union[pathlib.Path, str]], List[{name: str, mime_type: str, buffer: bytes}], pathlib.Path, str, {name: str, mime_type: str, buffer: bytes}]
+        files : Union[List[Union[pathlib.Path, str]], List[{name: str, mimeType: str, buffer: bytes}], pathlib.Path, str, {name: str, mimeType: str, buffer: bytes}]
         timeout : Union[float, NoneType]
             Maximum time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by
             using the `browser_context.set_default_timeout()` or `page.set_default_timeout()` methods.
@@ -2533,7 +2542,7 @@ class FileChooser(AsyncBase):
 
         Parameters
         ----------
-        files : Union[List[Union[pathlib.Path, str]], List[{name: str, mime_type: str, buffer: bytes}], pathlib.Path, str, {name: str, mime_type: str, buffer: bytes}]
+        files : Union[List[Union[pathlib.Path, str]], List[{name: str, mimeType: str, buffer: bytes}], pathlib.Path, str, {name: str, mimeType: str, buffer: bytes}]
         timeout : Union[float, NoneType]
             Maximum time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by
             using the `browser_context.set_default_timeout()` or `page.set_default_timeout()` methods.
@@ -3341,7 +3350,7 @@ class Frame(AsyncBase):
         modifiers: typing.Union[
             typing.List[Literal["Alt", "Control", "Meta", "Shift"]]
         ] = None,
-        position: typing.Union[typing.Tuple[float, float]] = None,
+        position: "Position" = None,
         delay: float = None,
         button: Literal["left", "middle", "right"] = None,
         click_count: int = None,
@@ -3370,7 +3379,7 @@ class Frame(AsyncBase):
         modifiers : Union[List[Union["Alt", "Control", "Meta", "Shift"]], NoneType]
             Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current
             modifiers back. If not specified, currently pressed modifiers are used.
-        position : Union[typing.Tuple[float, float], NoneType]
+        position : Union[{x: float, y: float}, NoneType]
             A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the
             element.
         delay : Union[float, NoneType]
@@ -3417,7 +3426,7 @@ class Frame(AsyncBase):
         modifiers: typing.Union[
             typing.List[Literal["Alt", "Control", "Meta", "Shift"]]
         ] = None,
-        position: typing.Union[typing.Tuple[float, float]] = None,
+        position: "Position" = None,
         delay: float = None,
         button: Literal["left", "middle", "right"] = None,
         timeout: float = None,
@@ -3448,7 +3457,7 @@ class Frame(AsyncBase):
         modifiers : Union[List[Union["Alt", "Control", "Meta", "Shift"]], NoneType]
             Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current
             modifiers back. If not specified, currently pressed modifiers are used.
-        position : Union[typing.Tuple[float, float], NoneType]
+        position : Union[{x: float, y: float}, NoneType]
             A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the
             element.
         delay : Union[float, NoneType]
@@ -3492,7 +3501,7 @@ class Frame(AsyncBase):
         modifiers: typing.Union[
             typing.List[Literal["Alt", "Control", "Meta", "Shift"]]
         ] = None,
-        position: typing.Union[typing.Tuple[float, float]] = None,
+        position: "Position" = None,
         timeout: float = None,
         force: bool = None,
         no_wait_after: bool = None,
@@ -3520,7 +3529,7 @@ class Frame(AsyncBase):
         modifiers : Union[List[Union["Alt", "Control", "Meta", "Shift"]], NoneType]
             Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current
             modifiers back. If not specified, currently pressed modifiers are used.
-        position : Union[typing.Tuple[float, float], NoneType]
+        position : Union[{x: float, y: float}, NoneType]
             A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the
             element.
         timeout : Union[float, NoneType]
@@ -3761,7 +3770,7 @@ class Frame(AsyncBase):
         modifiers: typing.Union[
             typing.List[Literal["Alt", "Control", "Meta", "Shift"]]
         ] = None,
-        position: typing.Union[typing.Tuple[float, float]] = None,
+        position: "Position" = None,
         timeout: float = None,
         force: bool = None,
     ) -> NoneType:
@@ -3786,7 +3795,7 @@ class Frame(AsyncBase):
         modifiers : Union[List[Union["Alt", "Control", "Meta", "Shift"]], NoneType]
             Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current
             modifiers back. If not specified, currently pressed modifiers are used.
-        position : Union[typing.Tuple[float, float], NoneType]
+        position : Union[{x: float, y: float}, NoneType]
             A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the
             element.
         timeout : Union[float, NoneType]
@@ -3902,7 +3911,7 @@ class Frame(AsyncBase):
         selector : str
             A selector to search for element. If there are multiple elements satisfying the selector, the first will be used. See
             [working with selectors](./selectors.md#working-with-selectors) for more details.
-        files : Union[List[Union[pathlib.Path, str]], List[{name: str, mime_type: str, buffer: bytes}], pathlib.Path, str, {name: str, mime_type: str, buffer: bytes}]
+        files : Union[List[Union[pathlib.Path, str]], List[{name: str, mimeType: str, buffer: bytes}], pathlib.Path, str, {name: str, mimeType: str, buffer: bytes}]
         timeout : Union[float, NoneType]
             Maximum time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by
             using the `browser_context.set_default_timeout()` or `page.set_default_timeout()` methods.
@@ -4438,7 +4447,10 @@ class Selectors(AsyncBase):
             Name that is used in selectors as a prefix, e.g. `{name: 'foo'}` enables `foo=myselectorbody` selectors. May only
             contain `[a-zA-Z0-9_]` characters.
         script : Union[str, NoneType]
-            Script that evaluates to a selector engine instance.
+            Raw script content.
+        path : Union[pathlib.Path, str, NoneType]
+            Path to the JavaScript file. If `path` is a relative path, then it is resolved relative to the current working
+            directory.
         content_script : Union[bool, NoneType]
             Whether to run this selector engine in isolated JavaScript environment. This environment has access to the same DOM, but
             not any JavaScript objects from the frame's scripts. Defaults to `false`. Note that running as a content script is not
@@ -4506,7 +4518,7 @@ class ConsoleMessage(AsyncBase):
 
         Returns
         -------
-        {url: str, line_number: int, column_number: int}
+        {url: str, lineNumber: int, columnNumber: int}
         """
         return mapping.from_impl(self._impl_obj.location)
 
@@ -6024,7 +6036,7 @@ class Page(AsyncBase):
             log_api("<= page.emulate_media failed")
             raise e
 
-    async def set_viewport_size(self, width: int, height: int) -> NoneType:
+    async def set_viewport_size(self, viewport_size: "ViewportSize") -> NoneType:
         """Page.set_viewport_size
 
         In the case of multiple pages in a single browser, each page can have its own viewport size. However,
@@ -6035,16 +6047,13 @@ class Page(AsyncBase):
 
         Parameters
         ----------
-        width : int
-            page width in pixels. **required**
-        height : int
-            page height in pixels. **required**
+        viewport_size : {width: int, height: int}
         """
 
         try:
             log_api("=> page.set_viewport_size started")
             result = mapping.from_maybe_impl(
-                await self._impl_obj.set_viewport_size(width=width, height=height)
+                await self._impl_obj.set_viewport_size(viewportSize=viewport_size)
             )
             log_api("<= page.set_viewport_size succeded")
             return result
@@ -6052,17 +6061,17 @@ class Page(AsyncBase):
             log_api("<= page.set_viewport_size failed")
             raise e
 
-    def viewport_size(self) -> typing.Union[typing.Tuple[int, int], NoneType]:
+    def viewport_size(self) -> typing.Union["ViewportSize", NoneType]:
         """Page.viewport_size
 
         Returns
         -------
-        Union[typing.Tuple[int, int], NoneType]
+        Union[{width: int, height: int}, NoneType]
         """
 
         try:
             log_api("=> page.viewport_size started")
-            result = mapping.from_maybe_impl(self._impl_obj.viewport_size())
+            result = mapping.from_impl_nullable(self._impl_obj.viewport_size())
             log_api("<= page.viewport_size succeded")
             return result
         except Exception as e:
@@ -6337,7 +6346,7 @@ class Page(AsyncBase):
         modifiers: typing.Union[
             typing.List[Literal["Alt", "Control", "Meta", "Shift"]]
         ] = None,
-        position: typing.Union[typing.Tuple[float, float]] = None,
+        position: "Position" = None,
         delay: float = None,
         button: Literal["left", "middle", "right"] = None,
         click_count: int = None,
@@ -6368,7 +6377,7 @@ class Page(AsyncBase):
         modifiers : Union[List[Union["Alt", "Control", "Meta", "Shift"]], NoneType]
             Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current
             modifiers back. If not specified, currently pressed modifiers are used.
-        position : Union[typing.Tuple[float, float], NoneType]
+        position : Union[{x: float, y: float}, NoneType]
             A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the
             element.
         delay : Union[float, NoneType]
@@ -6415,7 +6424,7 @@ class Page(AsyncBase):
         modifiers: typing.Union[
             typing.List[Literal["Alt", "Control", "Meta", "Shift"]]
         ] = None,
-        position: typing.Union[typing.Tuple[float, float]] = None,
+        position: "Position" = None,
         delay: float = None,
         button: Literal["left", "middle", "right"] = None,
         timeout: float = None,
@@ -6448,7 +6457,7 @@ class Page(AsyncBase):
         modifiers : Union[List[Union["Alt", "Control", "Meta", "Shift"]], NoneType]
             Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current
             modifiers back. If not specified, currently pressed modifiers are used.
-        position : Union[typing.Tuple[float, float], NoneType]
+        position : Union[{x: float, y: float}, NoneType]
             A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the
             element.
         delay : Union[float, NoneType]
@@ -6492,7 +6501,7 @@ class Page(AsyncBase):
         modifiers: typing.Union[
             typing.List[Literal["Alt", "Control", "Meta", "Shift"]]
         ] = None,
-        position: typing.Union[typing.Tuple[float, float]] = None,
+        position: "Position" = None,
         timeout: float = None,
         force: bool = None,
         no_wait_after: bool = None,
@@ -6522,7 +6531,7 @@ class Page(AsyncBase):
         modifiers : Union[List[Union["Alt", "Control", "Meta", "Shift"]], NoneType]
             Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current
             modifiers back. If not specified, currently pressed modifiers are used.
-        position : Union[typing.Tuple[float, float], NoneType]
+        position : Union[{x: float, y: float}, NoneType]
             A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the
             element.
         timeout : Union[float, NoneType]
@@ -6767,7 +6776,7 @@ class Page(AsyncBase):
         modifiers: typing.Union[
             typing.List[Literal["Alt", "Control", "Meta", "Shift"]]
         ] = None,
-        position: typing.Union[typing.Tuple[float, float]] = None,
+        position: "Position" = None,
         timeout: float = None,
         force: bool = None,
     ) -> NoneType:
@@ -6794,7 +6803,7 @@ class Page(AsyncBase):
         modifiers : Union[List[Union["Alt", "Control", "Meta", "Shift"]], NoneType]
             Modifier keys to press. Ensures that only these modifiers are pressed during the operation, and then restores current
             modifiers back. If not specified, currently pressed modifiers are used.
-        position : Union[typing.Tuple[float, float], NoneType]
+        position : Union[{x: float, y: float}, NoneType]
             A point to use relative to the top-left corner of element padding box. If not specified, uses some visible point of the
             element.
         timeout : Union[float, NoneType]
@@ -6913,7 +6922,7 @@ class Page(AsyncBase):
         selector : str
             A selector to search for element. If there are multiple elements satisfying the selector, the first will be used. See
             [working with selectors](./selectors.md#working-with-selectors) for more details.
-        files : Union[List[Union[pathlib.Path, str]], List[{name: str, mime_type: str, buffer: bytes}], pathlib.Path, str, {name: str, mime_type: str, buffer: bytes}]
+        files : Union[List[Union[pathlib.Path, str]], List[{name: str, mimeType: str, buffer: bytes}], pathlib.Path, str, {name: str, mimeType: str, buffer: bytes}]
         timeout : Union[float, NoneType]
             Maximum time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by
             using the `browser_context.set_default_timeout()` or `page.set_default_timeout()` methods.
@@ -7928,9 +7937,7 @@ class BrowserContext(AsyncBase):
             log_api("<= browser_context.clear_permissions failed")
             raise e
 
-    async def set_geolocation(
-        self, latitude: float, longitude: float, accuracy: float = None
-    ) -> NoneType:
+    async def set_geolocation(self, geolocation: "Geolocation" = None) -> NoneType:
         """BrowserContext.set_geolocation
 
         Sets the context's geolocation. Passing `null` or `undefined` emulates position unavailable.
@@ -7940,40 +7947,18 @@ class BrowserContext(AsyncBase):
 
         Parameters
         ----------
-        latitude : float
-            Latitude between -90 and 90. **required**
-        longitude : float
-            Longitude between -180 and 180. **required**
-        accuracy : Union[float, NoneType]
-            Non-negative accuracy value. Defaults to `0`. Optional.
+        geolocation : Union[{latitude: float, longitude: float, accuracy: Union[float, NoneType]}, NoneType]
         """
 
         try:
             log_api("=> browser_context.set_geolocation started")
             result = mapping.from_maybe_impl(
-                await self._impl_obj.set_geolocation(
-                    latitude=latitude, longitude=longitude, accuracy=accuracy
-                )
+                await self._impl_obj.set_geolocation(geolocation=geolocation)
             )
             log_api("<= browser_context.set_geolocation succeded")
             return result
         except Exception as e:
             log_api("<= browser_context.set_geolocation failed")
-            raise e
-
-    async def reset_geolocation(self) -> NoneType:
-        """BrowserContext.reset_geolocation
-
-        Emulates position unavailable state.
-        """
-
-        try:
-            log_api("=> browser_context.reset_geolocation started")
-            result = mapping.from_maybe_impl(await self._impl_obj.reset_geolocation())
-            log_api("<= browser_context.reset_geolocation succeded")
-            return result
-        except Exception as e:
-            log_api("<= browser_context.reset_geolocation failed")
             raise e
 
     async def set_extra_http_headers(self, headers: typing.Dict[str, str]) -> NoneType:
@@ -8528,7 +8513,8 @@ class Browser(AsyncBase):
 
     async def new_context(
         self,
-        viewport: typing.Union[typing.Tuple[int, int], Literal[0]] = None,
+        viewport: "ViewportSize" = None,
+        no_viewport: bool = None,
         ignore_https_errors: bool = None,
         java_script_enabled: bool = None,
         bypass_csp: bool = None,
@@ -8539,7 +8525,7 @@ class Browser(AsyncBase):
         permissions: typing.List[str] = None,
         extra_http_headers: typing.Union[typing.Dict[str, str]] = None,
         offline: bool = None,
-        http_credentials: typing.Union[typing.Tuple[str, str]] = None,
+        http_credentials: "HttpCredentials" = None,
         device_scale_factor: float = None,
         is_mobile: bool = None,
         has_touch: bool = None,
@@ -8550,7 +8536,7 @@ class Browser(AsyncBase):
         record_har_path: typing.Union[str, pathlib.Path] = None,
         record_har_omit_content: bool = None,
         record_video_dir: typing.Union[str, pathlib.Path] = None,
-        record_video_size: typing.Union[typing.Tuple[int, int]] = None,
+        record_video_size: "ViewportSize" = None,
         storage_state: typing.Union["StorageState", str, pathlib.Path] = None,
     ) -> "BrowserContext":
         """Browser.new_context
@@ -8559,8 +8545,10 @@ class Browser(AsyncBase):
 
         Parameters
         ----------
-        viewport : Union["0", typing.Tuple[int, int], NoneType]
-            Sets a consistent viewport for each page. Defaults to an 1280x720 viewport. `null` disables the default viewport.
+        viewport : Union[{width: int, height: int}, NoneType]
+            Sets a consistent viewport for each page. Defaults to an 1280x720 viewport. `no_viewport` disables the fixed viewport.
+        no_viewport : Union[bool, NoneType]
+            Disables the default viewport.
         ignore_https_errors : Union[bool, NoneType]
             Whether to ignore HTTPS errors during navigation. Defaults to `false`.
         java_script_enabled : Union[bool, NoneType]
@@ -8584,7 +8572,7 @@ class Browser(AsyncBase):
             An object containing additional HTTP headers to be sent with every request. All header values must be strings.
         offline : Union[bool, NoneType]
             Whether to emulate network being offline. Defaults to `false`.
-        http_credentials : Union[typing.Tuple[str, str], NoneType]
+        http_credentials : Union[{username: str, password: str}, NoneType]
             Credentials for [HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
         device_scale_factor : Union[float, NoneType]
             Specify device scale factor (can be thought of as dpr). Defaults to `1`.
@@ -8608,10 +8596,8 @@ class Browser(AsyncBase):
             Optional setting to control whether to omit request content from the HAR. Defaults to `false`.
         record_video_dir : Union[pathlib.Path, str, NoneType]
             Path to the directory to put videos into.
-        record_video_size : Union[typing.Tuple[int, int], NoneType]
-            Optional dimensions of the recorded videos. If not specified the size will be equal to `viewport`. If `viewport` is not
-            configured explicitly the video size defaults to 1280x720. Actual picture of each page will be scaled down if necessary
-            to fit the specified size.
+        record_video_size : Union[{width: int, height: int}, NoneType]
+            Optional dimensions of the recorded videos. If not specified the size will be equal to `viewport`.
         storage_state : Union[pathlib.Path, str, {cookies: Union[List[{name: str, value: str, url: Union[str, NoneType], domain: Union[str, NoneType], path: Union[str, NoneType], expires: Union[float, NoneType], httpOnly: Union[bool, NoneType], secure: Union[bool, NoneType], sameSite: Union["Lax", "None", "Strict", NoneType]}], NoneType], origins: Union[List[{origin: str, localStorage: List[{name: str, value: str}]}], NoneType]}, NoneType]
             Populates context with given storage state. This method can be used to initialize context with logged-in information
             obtained via `browser_context.storage_state()`. Either a path to the file with saved storage, or an object with
@@ -8627,6 +8613,7 @@ class Browser(AsyncBase):
             result = mapping.from_impl(
                 await self._impl_obj.new_context(
                     viewport=viewport,
+                    noViewport=no_viewport,
                     ignoreHTTPSErrors=ignore_https_errors,
                     javaScriptEnabled=java_script_enabled,
                     bypassCSP=bypass_csp,
@@ -8660,7 +8647,8 @@ class Browser(AsyncBase):
 
     async def new_page(
         self,
-        viewport: typing.Union[typing.Tuple[int, int], Literal[0]] = None,
+        viewport: "ViewportSize" = None,
+        no_viewport: bool = None,
         ignore_https_errors: bool = None,
         java_script_enabled: bool = None,
         bypass_csp: bool = None,
@@ -8671,7 +8659,7 @@ class Browser(AsyncBase):
         permissions: typing.List[str] = None,
         extra_http_headers: typing.Union[typing.Dict[str, str]] = None,
         offline: bool = None,
-        http_credentials: typing.Union[typing.Tuple[str, str]] = None,
+        http_credentials: "HttpCredentials" = None,
         device_scale_factor: float = None,
         is_mobile: bool = None,
         has_touch: bool = None,
@@ -8682,7 +8670,7 @@ class Browser(AsyncBase):
         record_har_path: typing.Union[str, pathlib.Path] = None,
         record_har_omit_content: bool = None,
         record_video_dir: typing.Union[str, pathlib.Path] = None,
-        record_video_size: typing.Union[typing.Tuple[int, int]] = None,
+        record_video_size: "ViewportSize" = None,
         storage_state: typing.Union["StorageState", str, pathlib.Path] = None,
     ) -> "Page":
         """Browser.new_page
@@ -8695,8 +8683,10 @@ class Browser(AsyncBase):
 
         Parameters
         ----------
-        viewport : Union["0", typing.Tuple[int, int], NoneType]
-            Sets a consistent viewport for each page. Defaults to an 1280x720 viewport. `null` disables the default viewport.
+        viewport : Union[{width: int, height: int}, NoneType]
+            Sets a consistent viewport for each page. Defaults to an 1280x720 viewport. `no_viewport` disables the fixed viewport.
+        no_viewport : Union[bool, NoneType]
+            Disables the default viewport.
         ignore_https_errors : Union[bool, NoneType]
             Whether to ignore HTTPS errors during navigation. Defaults to `false`.
         java_script_enabled : Union[bool, NoneType]
@@ -8720,7 +8710,7 @@ class Browser(AsyncBase):
             An object containing additional HTTP headers to be sent with every request. All header values must be strings.
         offline : Union[bool, NoneType]
             Whether to emulate network being offline. Defaults to `false`.
-        http_credentials : Union[typing.Tuple[str, str], NoneType]
+        http_credentials : Union[{username: str, password: str}, NoneType]
             Credentials for [HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
         device_scale_factor : Union[float, NoneType]
             Specify device scale factor (can be thought of as dpr). Defaults to `1`.
@@ -8744,10 +8734,8 @@ class Browser(AsyncBase):
             Optional setting to control whether to omit request content from the HAR. Defaults to `false`.
         record_video_dir : Union[pathlib.Path, str, NoneType]
             Path to the directory to put videos into.
-        record_video_size : Union[typing.Tuple[int, int], NoneType]
-            Optional dimensions of the recorded videos. If not specified the size will be equal to `viewport`. If `viewport` is not
-            configured explicitly the video size defaults to 1280x720. Actual picture of each page will be scaled down if necessary
-            to fit the specified size.
+        record_video_size : Union[{width: int, height: int}, NoneType]
+            Optional dimensions of the recorded videos. If not specified the size will be equal to `viewport`.
         storage_state : Union[pathlib.Path, str, {cookies: Union[List[{name: str, value: str, url: Union[str, NoneType], domain: Union[str, NoneType], path: Union[str, NoneType], expires: Union[float, NoneType], httpOnly: Union[bool, NoneType], secure: Union[bool, NoneType], sameSite: Union["Lax", "None", "Strict", NoneType]}], NoneType], origins: Union[List[{origin: str, localStorage: List[{name: str, value: str}]}], NoneType]}, NoneType]
             Populates context with given storage state. This method can be used to initialize context with logged-in information
             obtained via `browser_context.storage_state()`. Either a path to the file with saved storage, or an object with
@@ -8763,6 +8751,7 @@ class Browser(AsyncBase):
             result = mapping.from_impl(
                 await self._impl_obj.new_page(
                     viewport=viewport,
+                    noViewport=no_viewport,
                     ignoreHTTPSErrors=ignore_https_errors,
                     javaScriptEnabled=java_script_enabled,
                     bypassCSP=bypass_csp,
@@ -8980,7 +8969,8 @@ class BrowserType(AsyncBase):
         proxy: "ProxySettings" = None,
         downloads_path: typing.Union[str, pathlib.Path] = None,
         slow_mo: float = None,
-        viewport: typing.Union[typing.Tuple[int, int], Literal[0]] = None,
+        viewport: "ViewportSize" = None,
+        no_viewport: bool = None,
         ignore_https_errors: bool = None,
         java_script_enabled: bool = None,
         bypass_csp: bool = None,
@@ -8991,7 +8981,7 @@ class BrowserType(AsyncBase):
         permissions: typing.List[str] = None,
         extra_http_headers: typing.Union[typing.Dict[str, str]] = None,
         offline: bool = None,
-        http_credentials: typing.Union[typing.Tuple[str, str]] = None,
+        http_credentials: "HttpCredentials" = None,
         device_scale_factor: float = None,
         is_mobile: bool = None,
         has_touch: bool = None,
@@ -9001,7 +8991,7 @@ class BrowserType(AsyncBase):
         record_har_path: typing.Union[str, pathlib.Path] = None,
         record_har_omit_content: bool = None,
         record_video_dir: typing.Union[str, pathlib.Path] = None,
-        record_video_size: typing.Union[typing.Tuple[int, int]] = None,
+        record_video_size: "ViewportSize" = None,
     ) -> "BrowserContext":
         """BrowserType.launch_persistent_context
 
@@ -9053,8 +9043,10 @@ class BrowserType(AsyncBase):
         slow_mo : Union[float, NoneType]
             Slows down Playwright operations by the specified amount of milliseconds. Useful so that you can see what is going on.
             Defaults to 0.
-        viewport : Union["0", typing.Tuple[int, int], NoneType]
-            Sets a consistent viewport for each page. Defaults to an 1280x720 viewport. `null` disables the default viewport.
+        viewport : Union[{width: int, height: int}, NoneType]
+            Sets a consistent viewport for each page. Defaults to an 1280x720 viewport. `no_viewport` disables the fixed viewport.
+        no_viewport : Union[bool, NoneType]
+            Disables the default viewport.
         ignore_https_errors : Union[bool, NoneType]
             Whether to ignore HTTPS errors during navigation. Defaults to `false`.
         java_script_enabled : Union[bool, NoneType]
@@ -9078,7 +9070,7 @@ class BrowserType(AsyncBase):
             An object containing additional HTTP headers to be sent with every request. All header values must be strings.
         offline : Union[bool, NoneType]
             Whether to emulate network being offline. Defaults to `false`.
-        http_credentials : Union[typing.Tuple[str, str], NoneType]
+        http_credentials : Union[{username: str, password: str}, NoneType]
             Credentials for [HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
         device_scale_factor : Union[float, NoneType]
             Specify device scale factor (can be thought of as dpr). Defaults to `1`.
@@ -9100,10 +9092,8 @@ class BrowserType(AsyncBase):
             Optional setting to control whether to omit request content from the HAR. Defaults to `false`.
         record_video_dir : Union[pathlib.Path, str, NoneType]
             Path to the directory to put videos into.
-        record_video_size : Union[typing.Tuple[int, int], NoneType]
-            Optional dimensions of the recorded videos. If not specified the size will be equal to `viewport`. If `viewport` is not
-            configured explicitly the video size defaults to 1280x720. Actual picture of each page will be scaled down if necessary
-            to fit the specified size.
+        record_video_size : Union[{width: int, height: int}, NoneType]
+            Optional dimensions of the recorded videos. If not specified the size will be equal to `viewport`.
 
         Returns
         -------
@@ -9129,6 +9119,7 @@ class BrowserType(AsyncBase):
                     downloadsPath=downloads_path,
                     slowMo=slow_mo,
                     viewport=viewport,
+                    noViewport=no_viewport,
                     ignoreHTTPSErrors=ignore_https_errors,
                     javaScriptEnabled=java_script_enabled,
                     bypassCSP=bypass_csp,
@@ -9167,7 +9158,7 @@ class Playwright(AsyncBase):
         super().__init__(obj)
 
     @property
-    def devices(self) -> typing.Dict[str, "DeviceDescriptor"]:
+    def devices(self) -> typing.Dict:
         """Playwright.devices
 
         Returns a list of devices to be used with `browser.new_context()` or `browser.new_page()`. Actual list of
@@ -9176,9 +9167,9 @@ class Playwright(AsyncBase):
 
         Returns
         -------
-        Dict[str, {user_agent: Union[str, NoneType], viewport: Union[typing.Tuple[int, int], NoneType], device_scale_factor: Union[int, NoneType], is_mobile: Union[bool, NoneType], has_touch: Union[bool, NoneType]}]
+        Dict
         """
-        return mapping.from_impl_dict(self._impl_obj.devices)
+        return mapping.from_maybe_impl(self._impl_obj.devices)
 
     @property
     def selectors(self) -> "Selectors":
