@@ -9218,6 +9218,19 @@ class BrowserType(AsyncBase):
             )
         )
 
+    async def connect(
+        self, ws_endpoint: str, *, slow_mo: float = None, timeout: float = None
+    ) -> "Browser":
+
+        return mapping.from_impl(
+            await self._async(
+                "browser_type.connect",
+                self._impl_obj.connect(
+                    wsEndpoint=ws_endpoint, slowMo=slow_mo, timeout=timeout
+                ),
+            )
+        )
+
 
 mapping.register(BrowserTypeImpl, BrowserType)
 

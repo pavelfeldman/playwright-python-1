@@ -24,6 +24,9 @@ from pyee import AsyncIOEventEmitter
 from playwright._impl._helper import ParsedMessagePayload, parse_error
 from playwright._impl._transport import Transport
 
+object_factories: List = []
+def init_remote_object_factory(factory: Any) -> None:
+    object_factories.append(factory)
 
 class Channel(AsyncIOEventEmitter):
     def __init__(self, connection: "Connection", guid: str) -> None:
@@ -143,16 +146,15 @@ class RootChannelOwner(ChannelOwner):
 
 class Connection:
     def __init__(
-        self, dispatcher_fiber: Any, object_factory: Any, driver_executable: Path
+        self, dispatcher_fiber: Any, transport: Transport
     ) -> None:
         self._dispatcher_fiber: Any = dispatcher_fiber
-        self._transport = Transport(driver_executable)
+        self._transport = transport
         self._transport.on_message = lambda msg: self._dispatch(msg)
         self._waiting_for_object: Dict[str, Any] = {}
         self._last_id = 0
         self._objects: Dict[str, ChannelOwner] = {}
         self._callbacks: Dict[int, ProtocolCallback] = {}
-        self._object_factory = object_factory
         self._is_sync = False
         self._api_name = ""
 
@@ -264,7 +266,7 @@ class Connection:
     ) -> Any:
         result: ChannelOwner
         initializer = self._replace_guids_with_channels(initializer)
-        result = self._object_factory(parent, type, guid, initializer)
+        result = object_factories[0](parent, type, guid, initializer)
         if guid in self._waiting_for_object:
             self._waiting_for_object.pop(guid)(result)
         return result

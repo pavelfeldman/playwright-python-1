@@ -29,6 +29,7 @@ from playwright._impl._js_handle import JSHandle
 from playwright._impl._network import Request, Response, Route, WebSocket
 from playwright._impl._page import BindingCall, Page, Worker
 from playwright._impl._playwright import Playwright
+from playwright._impl._remote_browser import RemoteBrowser
 from playwright._impl._selectors import Selectors
 
 
@@ -51,7 +52,7 @@ def create_remote_object(
     if type == "BrowserContext":
         browser_name: str = ""
         if isinstance(parent, Browser):
-            browser_name = parent._browser_type.name
+            browser_name = "chromium" if initializer.get("isChromium") else parent._browser_type.name
         if isinstance(parent, BrowserType):
             browser_name = parent.name
         if browser_name == "chromium":
@@ -75,6 +76,8 @@ def create_remote_object(
         return Page(parent, type, guid, initializer)
     if type == "Playwright":
         return Playwright(parent, type, guid, initializer)
+    if type == "RemoteBrowser":
+        return RemoteBrowser(parent, type, guid, initializer)
     if type == "Request":
         return Request(parent, type, guid, initializer)
     if type == "Response":

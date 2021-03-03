@@ -18,16 +18,18 @@ from typing import Any
 from greenlet import greenlet
 
 from playwright._impl._api_types import Error
-from playwright._impl._connection import Connection
+from playwright._impl._connection import Connection, init_remote_object_factory
 from playwright._impl._driver import compute_driver_executable
 from playwright._impl._object_factory import create_remote_object
 from playwright._impl._playwright import Playwright
+from playwright._impl._transport import PipeTransport
 from playwright.sync_api._generated import Playwright as SyncPlaywright
 
 
 class PlaywrightContextManager:
     def __init__(self) -> None:
         self._playwright: SyncPlaywright
+        init_remote_object_factory(create_remote_object)
 
     def __enter__(self) -> SyncPlaywright:
         def greenlet_main() -> None:
@@ -53,7 +55,8 @@ Please use the Async API instead."""
 
         dispatcher_fiber = greenlet(greenlet_main)
         self._connection = Connection(
-            dispatcher_fiber, create_remote_object, compute_driver_executable()
+            dispatcher_fiber,
+            PipeTransport(compute_driver_executable()),
         )
 
         g_self = greenlet.getcurrent()

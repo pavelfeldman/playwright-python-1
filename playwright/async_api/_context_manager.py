@@ -15,19 +15,21 @@
 import asyncio
 from typing import Any
 
-from playwright._impl._connection import Connection
+from playwright._impl._connection import Connection, init_remote_object_factory
 from playwright._impl._driver import compute_driver_executable
 from playwright._impl._object_factory import create_remote_object
+from playwright._impl._transport import PipeTransport
 from playwright.async_api._generated import Playwright as AsyncPlaywright
 
 
 class PlaywrightContextManager:
     def __init__(self) -> None:
         self._connection: Connection
+        init_remote_object_factory(create_remote_object)
 
     async def __aenter__(self) -> AsyncPlaywright:
         self._connection = Connection(
-            None, create_remote_object, compute_driver_executable()
+            None, PipeTransport(compute_driver_executable())
         )
         loop = asyncio.get_running_loop()
         self._connection._loop = loop

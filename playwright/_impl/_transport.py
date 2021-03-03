@@ -19,7 +19,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Dict, Optional
-
+from websockets.protocol import WebSocketCommonProtocol
 
 # Sourced from: https://github.com/pytest-dev/pytest/blob/da01ee0a4bb0af780167ecd228ab3ad249511302/src/_pytest/faulthandler.py#L69-L77
 def _get_stderr_fileno() -> Optional[int]:
@@ -35,12 +35,16 @@ def _get_stderr_fileno() -> Optional[int]:
 
 
 class Transport:
-    def __init__(self, driver_executable: Path) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self.on_message = lambda _: None
+        self._loop: asyncio.AbstractEventLoop
+
+class PipeTransport(Transport):
+    def __init__(self, driver_executable: Path) -> None:
+        super().__init__()
         self._stopped = False
         self._driver_executable = driver_executable
-        self._loop: asyncio.AbstractEventLoop
 
     def stop(self) -> None:
         self._stopped = True
@@ -96,3 +100,27 @@ class Transport:
         self._output.write(
             len(data).to_bytes(4, byteorder="little", signed=False) + data
         )
+
+class WebSocketTransport(Transport):
+    def __init__(self, websocket: WebSocketCommonProtocol) -> None:
+        super().__init__()
+        self._websocket = websocket
+
+    async def run(self) -> None:
+        self._loop = asyncio.get_running_loop()
+        while True:
+            try:
+                buffer = await self._websocket.recv()
+                obj = json.loads(buffer)
+                if "DEBUGWS" in os.environ:  # pragma: no cover
+                    print("\x1b[33mRECV>\x1b[0m", json.dumps(obj, indent=2))
+                self.on_message(obj)
+            except Exception:
+                break
+            await asyncio.sleep(0)
+
+    def send(self, message: Dict) -> None:
+        msg = json.dumps(message)
+        if "DEBUGWS" in os.environ:  # pragma: no cover
+            print("\x1b[32mSEND>\x1b[0m", json.dumps(message, indent=2))
+        self._loop.create_task(self._websocket.send(msg.encode()))
