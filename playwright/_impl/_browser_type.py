@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import asyncio
 from pathlib import Path
 from typing import Dict, List, Union
 
-import asyncio
 import websockets
 
 from playwright._impl._api_structures import (
@@ -26,7 +26,7 @@ from playwright._impl._api_structures import (
 )
 from playwright._impl._browser import Browser, normalize_context_params
 from playwright._impl._browser_context import BrowserContext
-from playwright._impl._connection import Connection, ChannelOwner, from_channel
+from playwright._impl._connection import ChannelOwner, Connection, from_channel
 from playwright._impl._helper import (
     ColorScheme,
     Env,
@@ -34,6 +34,7 @@ from playwright._impl._helper import (
     not_installed_error,
 )
 from playwright._impl._transport import WebSocketTransport
+
 
 class BrowserType(ChannelOwner):
     def __init__(
@@ -144,12 +145,14 @@ class BrowserType(ChannelOwner):
             max_size=256 * 1024 * 1024,
             timeout=timeout / 1000 if timeout is not None else None,
             ping_interval=None,
-            ping_timeout=None
+            ping_timeout=None,
         )
         connection = Connection(None, WebSocketTransport(socket))
         connection._loop = asyncio.get_running_loop()
         self._loop.create_task(connection.run())
-        remote_browser = await connection.wait_for_object_with_known_name("remoteBrowser")
+        remote_browser = await connection.wait_for_object_with_known_name(
+            "remoteBrowser"
+        )
         remote_browser.browser.once(Browser.Events.Disconnected, socket.close)
         return remote_browser.browser
 

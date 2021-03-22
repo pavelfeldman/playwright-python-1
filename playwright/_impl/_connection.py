@@ -25,8 +25,11 @@ from playwright._impl._helper import ParsedMessagePayload, parse_error
 from playwright._impl._transport import Transport
 
 object_factories: List = []
+
+
 def init_remote_object_factory(factory: Any) -> None:
     object_factories.append(factory)
+
 
 class Channel(AsyncIOEventEmitter):
     def __init__(self, connection: "Connection", guid: str) -> None:
@@ -145,9 +148,7 @@ class RootChannelOwner(ChannelOwner):
 
 
 class Connection:
-    def __init__(
-        self, dispatcher_fiber: Any, transport: Transport
-    ) -> None:
+    def __init__(self, dispatcher_fiber: Any, transport: Transport) -> None:
         self._dispatcher_fiber: Any = dispatcher_fiber
         self._transport = transport
         self._transport.on_message = lambda msg: self._dispatch(msg)

@@ -52,7 +52,11 @@ def create_remote_object(
     if type == "BrowserContext":
         browser_name: str = ""
         if isinstance(parent, Browser):
-            browser_name = "chromium" if initializer.get("isChromium") else parent._browser_type.name
+            browser_name = (
+                "chromium"
+                if initializer.get("isChromium")
+                else parent._browser_type.name
+            )
         if isinstance(parent, BrowserType):
             browser_name = parent.name
         if browser_name == "chromium":

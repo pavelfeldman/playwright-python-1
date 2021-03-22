@@ -19,7 +19,9 @@ import os
 import sys
 from pathlib import Path
 from typing import Dict, Optional
+
 from websockets.protocol import WebSocketCommonProtocol
+
 
 # Sourced from: https://github.com/pytest-dev/pytest/blob/da01ee0a4bb0af780167ecd228ab3ad249511302/src/_pytest/faulthandler.py#L69-L77
 def _get_stderr_fileno() -> Optional[int]:
@@ -39,6 +41,7 @@ class Transport:
         super().__init__()
         self.on_message = lambda _: None
         self._loop: asyncio.AbstractEventLoop
+
 
 class PipeTransport(Transport):
     def __init__(self, driver_executable: Path) -> None:
@@ -100,6 +103,7 @@ class PipeTransport(Transport):
         self._output.write(
             len(data).to_bytes(4, byteorder="little", signed=False) + data
         )
+
 
 class WebSocketTransport(Transport):
     def __init__(self, websocket: WebSocketCommonProtocol) -> None:
